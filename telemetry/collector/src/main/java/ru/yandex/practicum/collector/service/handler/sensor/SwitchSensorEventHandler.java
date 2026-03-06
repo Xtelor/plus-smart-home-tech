@@ -6,20 +6,20 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.collector.producer.KafkaEventProducer;
 import ru.yandex.practicum.collector.service.SensorEventHandler;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
-import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
 
 import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
-public class MotionSensorEventHandler implements SensorEventHandler {
+public class SwitchSensorEventHandler implements SensorEventHandler {
 
-    private final KafkaEventProducer kafkaProducer;
+    private final KafkaEventProducer kafkaEventProducer;
 
     @Override
     public SensorEventProto.PayloadCase getMessageType() {
-        return SensorEventProto.PayloadCase.MOTION_SENSOR;
+        return SensorEventProto.PayloadCase.SWITCH_SENSOR;
     }
 
     @Override
@@ -29,15 +29,14 @@ public class MotionSensorEventHandler implements SensorEventHandler {
                 .setHubId(event.getHubId())
                 .setTimestamp(Instant.ofEpochSecond(
                         event.getTimestamp().getSeconds(),
-                        event.getTimestamp().getNanos()))
-                .setPayload(MotionSensorAvro.newBuilder()
-                        .setLinkQuality(event.getMotionSensor().getLinkQuality())
-                        .setMotion(event.getMotionSensor().getMotion())
-                        .setVoltage(event.getMotionSensor().getVoltage())
+                        event.getTimestamp().getNanos()
+                ))
+                .setPayload(SwitchSensorAvro.newBuilder()
+                        .setState(event.getSwitchSensor().getState())
                         .build())
                 .build();
 
-        kafkaProducer.send(new ProducerRecord<>(
+        kafkaEventProducer.send(new ProducerRecord<>(
                 "telemetry.sensors.v1",
                 event.getHubId(),
                 sensorEventAvro

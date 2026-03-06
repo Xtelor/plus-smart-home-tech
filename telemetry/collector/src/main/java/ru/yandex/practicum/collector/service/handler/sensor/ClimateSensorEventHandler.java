@@ -6,20 +6,21 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.collector.producer.KafkaEventProducer;
 import ru.yandex.practicum.collector.service.SensorEventHandler;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
-import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 
 import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
-public class MotionSensorEventHandler implements SensorEventHandler {
+public class ClimateSensorEventHandler implements SensorEventHandler {
 
-    private final KafkaEventProducer kafkaProducer;
+    private final KafkaEventProducer kafkaEventProducer;
+
 
     @Override
     public SensorEventProto.PayloadCase getMessageType() {
-        return SensorEventProto.PayloadCase.MOTION_SENSOR;
+        return SensorEventProto.PayloadCase.CLIMATE_SENSOR;
     }
 
     @Override
@@ -30,14 +31,14 @@ public class MotionSensorEventHandler implements SensorEventHandler {
                 .setTimestamp(Instant.ofEpochSecond(
                         event.getTimestamp().getSeconds(),
                         event.getTimestamp().getNanos()))
-                .setPayload(MotionSensorAvro.newBuilder()
-                        .setLinkQuality(event.getMotionSensor().getLinkQuality())
-                        .setMotion(event.getMotionSensor().getMotion())
-                        .setVoltage(event.getMotionSensor().getVoltage())
+                .setPayload(ClimateSensorAvro.newBuilder()
+                        .setTemperatureC(event.getClimateSensor().getTemperatureC())
+                        .setHumidity(event.getClimateSensor().getHumidity())
+                        .setCo2Level(event.getClimateSensor().getCo2Level())
                         .build())
                 .build();
 
-        kafkaProducer.send(new ProducerRecord<>(
+        kafkaEventProducer.send(new ProducerRecord<>(
                 "telemetry.sensors.v1",
                 event.getHubId(),
                 sensorEventAvro
