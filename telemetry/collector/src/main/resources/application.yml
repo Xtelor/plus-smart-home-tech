@@ -8,6 +8,8 @@ collector:
 aggregator:
   kafka:
     bootstrap-servers: localhost:9092
+    consumer:
+      group-id: aggregator-group
 
 
 grpc:

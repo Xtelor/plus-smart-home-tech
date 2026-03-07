@@ -17,10 +17,14 @@ public class KafkaConsumerConfig {
     @Value("${aggregator.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    @Value("${aggregator.kafka.consumer.group-id}")
+    private String groupId;
+
     @Bean
     public KafkaConsumer<String, SensorEventAvro> consumer() {
         Properties config = new Properties();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
         return new KafkaConsumer<>(config);
