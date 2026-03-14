@@ -17,7 +17,6 @@ public class ClimateSensorEventHandler implements SensorEventHandler {
 
     private final KafkaEventProducer kafkaEventProducer;
 
-
     @Override
     public SensorEventProto.PayloadCase getMessageType() {
         return SensorEventProto.PayloadCase.CLIMATE_SENSOR;

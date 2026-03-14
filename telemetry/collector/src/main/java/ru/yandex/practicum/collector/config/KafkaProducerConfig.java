@@ -7,9 +7,10 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.yandex.practicum.collector.serialization.EventSerializer;
+import ru.yandex.practicum.shared.serialization.EventSerializer;
 
 import java.util.Properties;
+import java.util.UUID;
 
 @Configuration
 public class KafkaProducerConfig {
@@ -23,6 +24,7 @@ public class KafkaProducerConfig {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, EventSerializer.class);
+        config.put(ProducerConfig.CLIENT_ID_CONFIG, "collector-producer-" + UUID.randomUUID());
         return new KafkaProducer<>(config);
     }
 }

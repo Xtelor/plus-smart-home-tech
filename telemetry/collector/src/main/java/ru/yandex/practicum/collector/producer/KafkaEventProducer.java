@@ -13,5 +13,6 @@ public class KafkaEventProducer {
 
     public void send(ProducerRecord<String, SpecificRecordBase> record) {
         kafkaProducer.send(record);
+        kafkaProducer.flush();
     }
 }
