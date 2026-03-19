@@ -1,6 +1,13 @@
+kafka:
+  bootstrap-servers: localhost:9092
+
 server:
   port: 8080
 
+grpc:
+  server:
+    port: 59091
+
 collector:
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${kafka.bootstrap-servers}
