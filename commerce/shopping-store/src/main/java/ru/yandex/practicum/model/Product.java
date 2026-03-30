@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import ru.yandex.practicum.enums.ProductCategory;
 import ru.yandex.practicum.enums.ProductState;
 import ru.yandex.practicum.enums.QuantityState;
@@ -20,7 +22,8 @@ import java.util.UUID;
 @Builder
 public class Product {
     @Id
-    @Column(name = "product_id", columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(name = "product_id", nullable = false, length = 36)
     private UUID productId;
 
     @Column(name = "product_name", nullable = false)

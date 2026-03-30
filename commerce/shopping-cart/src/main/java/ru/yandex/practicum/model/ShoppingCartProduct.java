@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "shopping_cart_products")
+@Table(name = "shopping_carts_products")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,12 +21,14 @@ public class ShoppingCartProduct {
 
     // ID корзины
     @Id
-    @Column(name = "shopping_cart_id", columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(name = "shopping_cart_id", nullable = false, length = 36)
     private UUID shoppingCartId;
 
     // ID товара
     @Id
-    @Column(name = "product_id", columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(name = "product_id", nullable = false, length = 36)
     private UUID productId;
 
     // Количество товара

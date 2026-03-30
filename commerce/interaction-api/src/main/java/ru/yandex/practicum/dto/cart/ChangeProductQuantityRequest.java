@@ -1,5 +1,6 @@
 package ru.yandex.practicum.dto.cart;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,5 +21,6 @@ public class ChangeProductQuantityRequest {
 
     // Новое количество товара
     @NotNull
+    @Min(1)
     private Long newQuantity;
 }

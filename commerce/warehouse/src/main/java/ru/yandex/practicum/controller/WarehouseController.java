@@ -1,5 +1,6 @@
 package ru.yandex.practicum.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.cart.ShoppingCartDto;
@@ -20,21 +21,21 @@ public class WarehouseController implements WarehouseClient {
     // Добавление нового товара на склад
     @Override
     @PutMapping
-    public void addNewProduct(@RequestBody NewProductInWarehouseRequest request) {
+    public void addNewProduct(@Valid @RequestBody NewProductInWarehouseRequest request) {
         warehouseService.addNewProduct(request);
     }
 
     // Принятие товара на склад
     @Override
     @PostMapping("/check")
-    public BookedProductsDto checkProducts(@RequestBody ShoppingCartDto dto) {
+    public BookedProductsDto checkProducts(@Valid @RequestBody ShoppingCartDto dto) {
         return warehouseService.checkProducts(dto);
     }
 
     // Предварительная проверка достаточности количества товаров на складе для данной корзины
     @Override
     @PostMapping("/add")
-    public void addToWarehouse(@RequestBody AddProductToWarehouseRequest request) {
+    public void addToWarehouse(@Valid @RequestBody AddProductToWarehouseRequest request) {
         warehouseService.addToWarehouse(request);
     }
 

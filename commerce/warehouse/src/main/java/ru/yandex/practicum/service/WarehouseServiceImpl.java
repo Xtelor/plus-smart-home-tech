@@ -54,7 +54,7 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .orElseThrow(() -> new NoSpecifiedProductInWarehouseException(
                         "Данный товар не был добавлен на склад."));
 
-        product.setQuantity(request.getQuantity());
+        product.setQuantity(product.getQuantity() + request.getQuantity());
 
         warehouseRepository.save(product);
     }
@@ -66,6 +66,10 @@ public class WarehouseServiceImpl implements WarehouseService {
         Map<UUID, Long> products = dto.getProducts();
 
         List<WarehouseProduct> warehouseProducts = warehouseRepository.findAllById(products.keySet());
+
+        if (warehouseProducts.size() != products.size()) {
+            throw new NoSpecifiedProductInWarehouseException("Не все товары найдены на складе.");
+        }
 
         double totalWeight = 0.0;
         double totalVolume = 0.0;

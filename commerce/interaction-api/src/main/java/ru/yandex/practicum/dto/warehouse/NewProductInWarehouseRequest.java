@@ -1,6 +1,6 @@
 package ru.yandex.practicum.dto.warehouse;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +28,6 @@ public class NewProductInWarehouseRequest {
 
     // Вес товара
     @NotNull
-    @Min(1)
+    @DecimalMin("1.0")
     private Double weight;
 }

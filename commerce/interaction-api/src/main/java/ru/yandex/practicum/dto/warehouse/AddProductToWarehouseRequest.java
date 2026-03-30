@@ -16,6 +16,7 @@ import java.util.UUID;
 public class AddProductToWarehouseRequest {
 
     // Идентификатор товара в БД
+    @NotNull
     private UUID productId;
 
     // Количество единиц товара для добавления на склад

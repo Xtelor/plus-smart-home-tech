@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS warehouse_products (
     product_height DOUBLE PRECISION NOT NULL CHECK (product_height >= 1.0),
     product_depth DOUBLE PRECISION NOT NULL CHECK (product_depth >= 1.0),
     weight DOUBLE PRECISION NOT NULL CHECK (weight >= 1.0),
-    quantity BIGINT NOT NULL DEFAULT 0 CHECK (quantity >= 1)
+    quantity BIGINT NOT NULL DEFAULT 0 CHECK (quantity >= 0)
 );

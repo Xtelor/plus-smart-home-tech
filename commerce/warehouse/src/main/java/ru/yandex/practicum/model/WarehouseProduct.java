@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -20,7 +22,8 @@ import java.util.UUID;
 public class WarehouseProduct {
 
     @Id
-    @Column(name = "product_id", columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(name = "product_id", nullable = false, length = 36)
     private UUID productId;
 
     @Column(name = "fragile")

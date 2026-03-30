@@ -13,3 +13,7 @@ spring:
     init:
       mode: always
       schema-locations: classpath:schema.sql
+  data:
+    web:
+      pageable:
+        serialization-mode: via_dto

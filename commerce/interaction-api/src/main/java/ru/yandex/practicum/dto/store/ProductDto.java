@@ -1,6 +1,6 @@
 package ru.yandex.practicum.dto.store;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +39,6 @@ public class ProductDto {
     private ProductCategory productCategory;
 
     @NotNull
-    @Min(1)
+    @DecimalMin("1.0")
     private BigDecimal price;
 }
