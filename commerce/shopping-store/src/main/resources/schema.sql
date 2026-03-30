@@ -1,0 +1,11 @@
+-- таблица товаров
+CREATE TABLE IF NOT EXISTS products (
+    product_id CHAR(36) PRIMARY KEY,
+    product_name VARCHAR(255) NOT NULL,
+    description VARCHAR(1000) NOT NULL,
+    image_src VARCHAR(500),
+    quantity_state VARCHAR(20) NOT NULL,
+    product_state VARCHAR(20) NOT NULL,
+    product_category VARCHAR(20) NOT NULL,
+    price DECIMAL(10,2) NOT NULL CHECK(price >= 1.0)
+);
