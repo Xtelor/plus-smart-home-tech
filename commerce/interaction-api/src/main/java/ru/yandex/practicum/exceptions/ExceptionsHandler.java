@@ -15,8 +15,8 @@ public class ExceptionsHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler(NoAuthorizedUserException.class)
-    public ResponseEntity<ErrorResponse> handleNoAuthorizedUser(NoAuthorizedUserException e) {
+    @ExceptionHandler(NotAuthorizedUserException.class)
+    public ResponseEntity<ErrorResponse> handleNoAuthorizedUser(NotAuthorizedUserException e) {
         ErrorResponse error = new ErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
@@ -41,6 +41,30 @@ public class ExceptionsHandler {
 
     @ExceptionHandler(ProductInShoppingCartLowQuantityInWarehouse.class)
     public ResponseEntity<ErrorResponse> handleLowQuantity(ProductInShoppingCartLowQuantityInWarehouse e) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(NoOrderFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoOrderFound(NoOrderFoundException e) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(NotEnoughInfoInOrderToCalculateException.class)
+    public ResponseEntity<ErrorResponse> handleNotEnoughInfo(NotEnoughInfoInOrderToCalculateException e) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(NoDeliveryFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoDeliveryFound(NoDeliveryFoundException e) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(ProductInShoppingCartNotInWarehouseException.class)
+    public ResponseEntity<ErrorResponse> handleNotInWarehouse(ProductInShoppingCartNotInWarehouseException e) {
         ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }

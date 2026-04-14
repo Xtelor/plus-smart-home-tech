@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.dto.cart.ShoppingCartDto;
-import ru.yandex.practicum.exceptions.NoAuthorizedUserException;
+import ru.yandex.practicum.exceptions.NotAuthorizedUserException;
 import ru.yandex.practicum.exceptions.NoProductsInShoppingCartException;
 import ru.yandex.practicum.feign.WarehouseClient;
 import ru.yandex.practicum.mapper.ShoppingCartMapper;
@@ -133,7 +133,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     // Валидация имени пользователя
     private void validateUsername(String username) {
         if (username == null || username.isBlank()) {
-            throw new NoAuthorizedUserException("Имя пользователя не может быть пустым.");
+            throw new NotAuthorizedUserException("Имя пользователя не может быть пустым.");
         }
     }
 
