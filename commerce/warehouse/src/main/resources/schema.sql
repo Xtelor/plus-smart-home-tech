@@ -8,3 +8,9 @@ CREATE TABLE IF NOT EXISTS warehouse_products (
     weight DOUBLE PRECISION NOT NULL CHECK (weight >= 1.0),
     quantity BIGINT NOT NULL DEFAULT 0 CHECK (quantity >= 0)
 );
+
+-- Забронированные для заказа товары
+CREATE TABLE IF NOT EXISTS order_bookings (
+    order_id CHAR(36) NOT NULL PRIMARY KEY,
+    delivery_id CHAR(36)
+);

@@ -4,15 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.cart.ShoppingCartDto;
-import ru.yandex.practicum.dto.warehouse.AddProductToWarehouseRequest;
-import ru.yandex.practicum.dto.warehouse.AddressDto;
-import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
-import ru.yandex.practicum.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.dto.warehouse.*;
 import ru.yandex.practicum.exceptions.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.exceptions.ProductInShoppingCartLowQuantityInWarehouse;
+import ru.yandex.practicum.exceptions.ProductInShoppingCartNotInWarehouseException;
 import ru.yandex.practicum.exceptions.SpecifiedProductAlreadyInWarehouseException;
 import ru.yandex.practicum.mapper.WarehouseMapper;
+import ru.yandex.practicum.model.OrderBooking;
 import ru.yandex.practicum.model.WarehouseProduct;
+import ru.yandex.practicum.repository.OrderBookingRepository;
 import ru.yandex.practicum.repository.WarehouseRepository;
 
 import java.security.SecureRandom;
@@ -24,6 +24,7 @@ import java.util.*;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
+    private final OrderBookingRepository orderBookingRepository;
     private final WarehouseMapper warehouseMapper;
 
     private static final String[] ADDRESSES =
@@ -33,6 +34,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             ADDRESSES[Random.from(new SecureRandom()).nextInt(0, ADDRESSES.length)];
 
     // Добавление нового товара на склад
+    @Override
     @Transactional
     public void addNewProduct(NewProductInWarehouseRequest request) {
 
@@ -47,6 +49,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     // Принятие товара на склад
+    @Override
     @Transactional
     public void addToWarehouse(AddProductToWarehouseRequest request) {
 
@@ -60,7 +63,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     // Предварительная проверка достаточности количества товаров на складе для данной корзины
-    @Transactional
+    @Override
     public BookedProductsDto checkProducts(ShoppingCartDto dto) {
 
         Map<UUID, Long> products = dto.getProducts();
@@ -68,7 +71,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         List<WarehouseProduct> warehouseProducts = warehouseRepository.findAllById(products.keySet());
 
         if (warehouseProducts.size() != products.size()) {
-            throw new NoSpecifiedProductInWarehouseException("Не все товары найдены на складе.");
+            throw new ProductInShoppingCartNotInWarehouseException("Не все товары найдены на складе.");
         }
 
         double totalWeight = 0.0;
@@ -109,4 +112,78 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .build();
     }
 
+    // Передача товаров в доставку
+    @Override
+    @Transactional
+    public void shippedToDelivery(ShippedToDeliveryRequest request) {
+
+        orderBookingRepository.findById(request.getOrderId())
+                .ifPresent(booking -> {
+                    booking.setDeliveryId(request.getDeliveryId());
+                    orderBookingRepository.save(booking);
+                });
+    }
+
+    // Принятие возврата товаров на склад
+    @Override
+    @Transactional
+    public void acceptReturn(Map<UUID, Long> products) {
+
+        List<WarehouseProduct> productList = warehouseRepository.findAllById(products.keySet());
+
+        for (WarehouseProduct product : productList) {
+            Long returnQuantity = products.get(product.getProductId());
+            product.setQuantity(product.getQuantity() + returnQuantity);
+        }
+
+        warehouseRepository.saveAll(productList);
+    }
+
+    // Сборка товаров к заказу для подготовки к отправке
+    @Override
+    @Transactional
+    public BookedProductsDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request) {
+
+        Map<UUID, Long> products = request.getProducts();
+
+        List<WarehouseProduct> productList = warehouseRepository.findAllById(products.keySet());
+
+        if (productList.size() != products.size()) {
+            throw new ProductInShoppingCartLowQuantityInWarehouse("Не все товары найдены на складе.");
+        }
+
+        double totalWeight = 0.0;
+        double totalVolume = 0.0;
+        boolean hasFragile = false;
+
+        for (WarehouseProduct product : productList) {
+            Long requiredQuantity = products.get(product.getProductId());
+
+            if (product.getQuantity() < requiredQuantity) {
+                throw new ProductInShoppingCartLowQuantityInWarehouse(
+                        "Недостаточно товара на складе: " + product.getProductId());
+            }
+
+            product.setQuantity(product.getQuantity() - requiredQuantity);
+
+            totalWeight += product.getWeight() * requiredQuantity;
+            totalVolume += product.getWidth() * product.getHeight() * product.getDepth() * requiredQuantity;
+
+            if (Objects.equals(Boolean.TRUE, product.getFragile())) {
+                hasFragile = true;
+            }
+        }
+
+        warehouseRepository.saveAll(productList);
+
+        orderBookingRepository.save(OrderBooking.builder()
+                .orderId(request.getOrderId())
+                .build());
+
+        return BookedProductsDto.builder()
+                .deliveryWeight(totalWeight)
+                .deliveryVolume(totalVolume)
+                .fragile(hasFragile)
+                .build();
+    }
 }
